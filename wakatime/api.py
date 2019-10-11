@@ -60,13 +60,11 @@ def send_heartbeats(heartbeats, args, configs, use_ntlm_proxy=False):
 
     # setup api request
     request_body = json.dumps(data)
-    api_key = u(base64.b64encode(str.encode(args.key) if is_py3 else args.key))
-    auth = u('Basic {api_key}').format(api_key=api_key)
+    api_key = u(str.encode(args.key) if is_py3 else args.key)
     headers = {
         'User-Agent': get_user_agent(args.plugin),
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': auth,
     }
 
     hostname = get_hostname(args)
@@ -103,10 +101,14 @@ def send_heartbeats(heartbeats, args, configs, use_ntlm_proxy=False):
     if args.ssl_certs_file and ssl_verify:
         ssl_verify = args.ssl_certs_file
 
+    params = {
+        'api_key': api_key,
+    }
+
     # send request to api
     response, code = None, None
     try:
-        response = session.post(api_url, data=request_body, headers=headers,
+        response = session.post(api_url, params=params, data=request_body, headers=headers,
                                 proxies=proxies, timeout=timeout,
                                 verify=ssl_verify)
     except RequestException:
@@ -176,12 +178,10 @@ def get_time_today(args, use_ntlm_proxy=False):
     if not timeout:
         timeout = 60
 
-    api_key = u(base64.b64encode(str.encode(args.key) if is_py3 else args.key))
-    auth = u('Basic {api_key}').format(api_key=api_key)
+    api_key = u(str.encode(args.key) if is_py3 else args.key)
     headers = {
         'User-Agent': get_user_agent(args.plugin),
         'Accept': 'application/json',
-        'Authorization': auth,
     }
 
     session_cache = SessionCache()
@@ -207,6 +207,7 @@ def get_time_today(args, use_ntlm_proxy=False):
         ssl_verify = args.ssl_certs_file
 
     params = {
+        'api_key': api_key,
         'start': 'today',
         'end': 'today',
     }
