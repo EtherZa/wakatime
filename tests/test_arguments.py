@@ -18,6 +18,7 @@ from wakatime.constants import (
     AUTH_ERROR,
     SUCCESS,
 )
+from wakatime.packages import certifi
 from wakatime.packages.requests.exceptions import RequestException
 from wakatime.packages.requests.models import Response
 from wakatime.utils import get_user_agent
@@ -104,10 +105,10 @@ class ArgumentsTestCase(TestCase):
             'time': float(now),
             'type': 'file',
             'cursorpos': None,
-            'dependencies': ['sqlalchemy', 'jinja', 'simplejson', 'flask', 'app', 'django', 'pygments', 'unittest', 'mock'],
+            'dependencies': ['sqlalchemy', 'jinja', 'simplejson', 'flask', 'app', 'django', 'pygments', 'unittest', 'mock', 'first', 'second'],
             'language': u('Python'),
             'lineno': None,
-            'lines': 37,
+            'lines': 38,
             'is_write': False,
             'user_agent': ua,
         }
@@ -436,7 +437,7 @@ class ArgumentsTestCase(TestCase):
             self.patched['wakatime.offlinequeue.Queue.push'].assert_not_called()
             self.patched['wakatime.offlinequeue.Queue.pop'].assert_called_once_with()
 
-            self.patched['wakatime.packages.requests.adapters.HTTPAdapter.send'].assert_called_once_with(ANY, cert=None, proxies={'https': proxy}, stream=False, timeout=60, verify=True)
+            self.patched['wakatime.packages.requests.adapters.HTTPAdapter.send'].assert_called_once_with(ANY, cert=None, proxies={'https': proxy}, stream=False, timeout=60, verify=certifi.where())
 
     @log_capture()
     def test_disable_ssl_verify_argument(self, logs):
@@ -722,7 +723,7 @@ class ArgumentsTestCase(TestCase):
             'dependencies': [],
             'language': u(language),
             'lineno': None,
-            'lines': 37,
+            'lines': 38,
             'is_write': False,
             'user_agent': ANY,
         }
@@ -1338,7 +1339,8 @@ class ArgumentsTestCase(TestCase):
         self.patched['wakatime.packages.requests.adapters.HTTPAdapter.send'].side_effect = RequestException('requests exception')
 
         key = str(uuid.uuid4())
-        args = ['--today', '--key', key]
+        config = 'tests/samples/configs/good_config.cfg'
+        args = ['--today', '--config', config, '--key', key]
 
         retval = execute(args)
         self.assertEquals(retval, API_ERROR)
@@ -1379,7 +1381,8 @@ class ArgumentsTestCase(TestCase):
         self.patched['wakatime.packages.requests.adapters.HTTPAdapter.send'].side_effect = Exception('generic exception')
 
         key = str(uuid.uuid4())
-        args = ['--today', '--key', key]
+        config = 'tests/samples/configs/good_config.cfg'
+        args = ['--today', '--config', config, '--key', key]
 
         retval = execute(args)
         self.assertEquals(retval, API_ERROR)
@@ -1423,7 +1426,8 @@ class ArgumentsTestCase(TestCase):
         self.patched['wakatime.packages.requests.adapters.HTTPAdapter.send'].return_value = response
 
         key = str(uuid.uuid4())
-        args = ['--today', '--key', key]
+        config = 'tests/samples/configs/good_config.cfg'
+        args = ['--today', '--config', config, '--key', key]
 
         retval = execute(args)
         self.assertEquals(retval, API_ERROR)

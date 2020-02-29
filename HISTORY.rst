@@ -3,6 +3,32 @@ History
 -------
 
 
+13.0.7 (2020-02-13)
++++++++++++++++++++
+
+- Split bundled pygments library for Python 2.7+.
+- Upgrade pygments for py27+ to v2.5.2 development master.
+
+
+13.0.6 (2020-02-11)
++++++++++++++++++++
+
+- Force requests to use bundled ca cert from certifi by default.
+
+
+13.0.5 (2020-02-11)
++++++++++++++++++++
+
+- Upgrade bundled certifi to v2019.11.28.
+
+
+13.0.4 (2020-02-05)
++++++++++++++++++++
+
+- Bundle cryptography, pyopenssl, and ipaddress packages for improved SSL
+  support on Python2.
+
+
 13.0.3 (2019-12-04)
 +++++++++++++++++++
 
